@@ -101,7 +101,7 @@ const Farms: React.FC = () => {
     });
   }, []);
 
-  const allPools = useMemo(() => {
+  const allPools = useMemo(() => {    
     if (!config?.farms) {
       return [];
     }

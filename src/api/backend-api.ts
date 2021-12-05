@@ -78,8 +78,12 @@ export type BigNumberJson = {
 export const useFetchFarmData = () => {
   const fetch = useFetch();
   return useCallback(async () => {
-    const data = (await fetch({ url: 'farms' })) as FarmData;
-    return data;
+    try {
+      const data = (await fetch({ url: 'farms' })) as FarmData;
+      return data;
+    } catch(err) {
+      return {} as FarmData;
+    }
   }, [fetch]);
 };
 
@@ -166,9 +170,13 @@ export const useGetDefistationTvl = () => {
         Authorization: 'Basic OmMyNDVhNGEyLTYxZjgtMTFlYi1hZTkzLTAyNDJhYzEzMDAwMg==',
       },
     }).then((res) => {
-      return Object.entries(res.result)
-        .filter(([, value]) => value !== 0)
-        .map(([key, value]) => [+key, value]) as [number, number][];
+      if (res && res.result) {
+        return Object.entries(res.result)
+          .filter(([, value]) => value !== 0)
+          .map(([key, value]) => [+key, value]) as [number, number][];
+      } else {
+        return [];
+      }
     });
   }, [fetchRaw]);
 };
