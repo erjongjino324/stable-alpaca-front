@@ -50,17 +50,6 @@ const NavContainer: React.FC<NavContainerProps> = ({ onClickItem }) => {
 
       <StyledNavItem onClick={handleClick}>
         <StyledLinkHref
-          href="https://dragonball.iron.finance"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src={iconDragonBall} />
-          DragonBall&nbsp;
-          <i className="fas fa-external-link"></i>
-        </StyledLinkHref>
-      </StyledNavItem>
-      <StyledNavItem onClick={handleClick}>
-        <StyledLinkHref
           href="https://gov.polygon.iron.finance"
           target="_blank"
           rel="noopener noreferrer"

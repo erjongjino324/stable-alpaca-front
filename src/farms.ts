@@ -5,7 +5,7 @@ export const Tokens: { [key: string]: string } = {
   TITAN: '0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A',
   MATIC: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  ETH: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+  ETH: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH
 };
 
 export const createAddLiquidityLink = (marketName: Market, token0: string, token1: string) => {
