@@ -8,7 +8,9 @@ const config: Configuration = {
   defaultProvider: 'https://rpc-mainnet.maticvigil.com',
   deployments: deploymentMainnet,
   tokens: {
-    USDC: ['0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', 6], // USDC on Polygon
+    USDC: ['0xdd9185db084f5c4fff3b4f70e7ba62123b812226', 6], // USDC on Polygon
+    TITAN: ['0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A', 18], // TITAN on Polygon
+    IRON: ['0xd86b5923f3ad7b585ed81b448170ae026c65ae9a', 18], // IRON on Polygon
   },
   foundryPools: [],
   oracleDollarUsdc: '0x16893D00D0570421A058E5a34B494626c63b3A9d', // PairOracle_IRON_USDC

@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Switch from 'react-switch';
 import ButtonSelectCollateral from 'src/components/ButtonSelectCollateral';
@@ -29,8 +29,16 @@ import ButtonMint from './components/ButtonMint';
 import { MintContentLoader } from './components/MintContentLoader';
 import MintFooter from './components/MintFooter';
 import TransactionConfirmationModal from './components/TransactionConfirmationModal';
+import ERC20 from '../../iron-bank/ERC20';
+import { abi as usdcAbi } from '../../iron-bank/deployments/mainnet/USDC.json';
+import { abi as ironAbi } from '../../iron-bank/deployments/mainnet/Iron.json';
+import { abi as titanAbi } from '../../iron-bank/deployments/mainnet/Titan.json';
+import config from 'src/config';
+import { useWeb3React } from '@web3-react/core';
 
 const Mint: React.FC = () => {
+  const { library: provider, chainId, account } = useWeb3React();
+  const { tokens } = config;
   const { showModal, hideModal } = useModalWithFC();
   const slippage = useGetSlippageTolerance();
   const history = useHistory();
@@ -40,9 +48,9 @@ const Mint: React.FC = () => {
   const [shareAmount] = useState<BigNumber>(BigNumber.from(0));
   const [minOutputAmount] = useState<BigNumber>();
   const [mintFeeValue] = useState<BigNumber>();
-  const collateralBalance = BigNumber.from(0);
-  const dollarBalance = BigNumber.from(0);
-  const shareBalance = BigNumber.from(0);
+  const [collateralBalance, setCollateralBalance] = useState(BigNumber.from(0));
+  const [dollarBalance, setDollarBalance] = useState(BigNumber.from(0));
+  const [shareBalance, setShareBalance] = useState(BigNumber.from(0));
   const isZap = useGetIsZap();
   const setIsZap = useSetZap();
 
@@ -95,6 +103,20 @@ const Mint: React.FC = () => {
     },
     [history],
   );
+
+  useEffect(() => {
+    const auxilliaryFn = async () => {
+      if (chainId) {
+        const usdcContract = new ERC20(tokens.USDC[0], usdcAbi, provider, '');
+        const ironContract = new ERC20(tokens.IRON[0], ironAbi, provider, '');
+        const titanContract = new ERC20(tokens.TITAN[0], titanAbi, provider, '');
+        setCollateralBalance(await usdcContract.balanceOf(account));
+        setShareBalance(await titanContract.balanceOf(account));
+        setDollarBalance(await ironContract.balanceOf(account));
+      }
+    };
+    auxilliaryFn();
+  }, [chainId]);
 
   return !info ? (
     <MintContentLoader />
