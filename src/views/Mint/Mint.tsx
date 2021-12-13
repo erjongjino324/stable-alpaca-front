@@ -33,6 +33,7 @@ import ERC20 from '../../iron-bank/ERC20';
 import { abi as usdcAbi } from '../../iron-bank/deployments/mainnet/USDC.json';
 import { abi as ironAbi } from '../../iron-bank/deployments/mainnet/Iron.json';
 import { abi as titanAbi } from '../../iron-bank/deployments/mainnet/Titan.json';
+import { abi as poolAbi } from '../../iron-bank/deployments/mainnet/Pool.json';
 import config from 'src/config';
 import { useWeb3React } from '@web3-react/core';
 
@@ -43,16 +44,20 @@ const Mint: React.FC = () => {
   const slippage = useGetSlippageTolerance();
   const history = useHistory();
   const info = useIronBankInfo();
-  const [collateralPrice] = useState<BigNumber>();
-  const [collateralAmount] = useState<BigNumber>(BigNumber.from(0));
-  const [shareAmount] = useState<BigNumber>(BigNumber.from(0));
-  const [minOutputAmount] = useState<BigNumber>();
-  const [mintFeeValue] = useState<BigNumber>();
+  const [collateralPrice, setCollateralPrice] = useState<BigNumber>();
+  const [collateralAmount, setCollateralAmount] = useState(BigNumber.from(0));
+  const [shareAmount, setShareAmount] = useState(BigNumber.from(0));
+  const [minOutputAmount, setMinOutputAmount] = useState<BigNumber>();
+  const [mintFeeValue, setMintFeeValue] = useState<BigNumber>();
   const [collateralBalance, setCollateralBalance] = useState(BigNumber.from(0));
   const [dollarBalance, setDollarBalance] = useState(BigNumber.from(0));
   const [shareBalance, setShareBalance] = useState(BigNumber.from(0));
   const isZap = useGetIsZap();
   const setIsZap = useSetZap();
+  const usdcContract = new ERC20(tokens.USDC, usdcAbi, provider, '');
+  const ironContract = new ERC20(tokens.IRON, ironAbi, provider, '');
+  const titanContract = new ERC20(tokens.TITAN, titanAbi, provider, '');
+  const poolContract = new ERC20(tokens.POOL, poolAbi, provider, '');
 
   const refInputCollateral = useRef(null);
   const refInputShare = useRef(null);
@@ -62,11 +67,11 @@ const Mint: React.FC = () => {
   const isFullCollaterallized = useMemo(() => info?.targetCollateralRatio.gte(10 ** 6), [info]);
 
   const updateCollateralAmount = useCallback((collateralAmount: BigNumber) => {
-    console.log('Todo...', collateralAmount);
+    setCollateralAmount(collateralAmount)
   }, []);
 
   const updateShareAmount = useCallback((shareAmount: BigNumber) => {
-    console.log('Todo...', shareAmount);
+    setShareAmount(shareAmount)
   }, []);
 
   const onMint = useCallback(() => {
@@ -107,9 +112,6 @@ const Mint: React.FC = () => {
   useEffect(() => {
     const auxilliaryFn = async () => {
       if (chainId) {
-        const usdcContract = new ERC20(tokens.USDC[0], usdcAbi, provider, '');
-        const ironContract = new ERC20(tokens.IRON[0], ironAbi, provider, '');
-        const titanContract = new ERC20(tokens.TITAN[0], titanAbi, provider, '');
         setCollateralBalance(await usdcContract.balanceOf(account));
         setShareBalance(await titanContract.balanceOf(account));
         setDollarBalance(await ironContract.balanceOf(account));

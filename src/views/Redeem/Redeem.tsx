@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import { useHistory } from 'react-router-dom';
 import SlippageControlButton from 'src/components/SlippageControl';
 import Spacer from 'src/components/Spacer';
@@ -30,8 +30,16 @@ import CollectionRedemption from './components/CollectionRedemption';
 import { RedeemContentLoader } from './components/RedeemContentLoader';
 import RedeemFooter from './components/RedeemFooter';
 import TransactionConfirmationModal from './components/TransactionConfirmationModal';
+import ERC20 from "../../iron-bank/ERC20";
+import { abi as usdcAbi } from '../../iron-bank/deployments/mainnet/USDC.json';
+import { abi as ironAbi } from '../../iron-bank/deployments/mainnet/Iron.json';
+import { abi as titanAbi } from '../../iron-bank/deployments/mainnet/Titan.json';
+import {useWeb3React} from "@web3-react/core";
+import config from "../../config";
 
 const Redeem: React.FC = () => {
+  const { library: provider, chainId, account } = useWeb3React();
+  const { tokens } = config;
   const info = useIronBankInfo();
   const [collateralPrice, setCollateralPrice] = useState<BigNumber>();
   const [poolCollateralBalance, setPoolCollateralBalance] = useState(BigNumber.from(0));
@@ -42,9 +50,9 @@ const Redeem: React.FC = () => {
   const [redemptionFeeValue, setRedemptionFeeValue] = useState(BigNumber.from(0));
 
   const slippage = useGetSlippageTolerance();
-  const dollarBalance = BigNumber.from(0);
-  const shareBalance = BigNumber.from(0);
-  const collateralBalance = BigNumber.from(0);
+  const [collateralBalance, setCollateralBalance] = useState(BigNumber.from(0));
+  const [dollarBalance, setDollarBalance] = useState(BigNumber.from(0));
+  const [shareBalance, setShareBalance] = useState(BigNumber.from(0));
   const refInputDollar = useRef(null);
   const { showModal, hideModal } = useModalWithFC();
   const history = useHistory();
@@ -99,6 +107,20 @@ const Redeem: React.FC = () => {
   const updateInputAmount = useCallback((amount: BigNumber) => {
     console.log('Todo...', amount);
   }, []);
+
+  useEffect(() => {
+    const auxilliaryFn = async () => {
+      if (chainId) {
+        const usdcContract = new ERC20(tokens.USDC, usdcAbi, provider, '');
+        const ironContract = new ERC20(tokens.IRON, ironAbi, provider, '');
+        const titanContract = new ERC20(tokens.TITAN, titanAbi, provider, '');
+        setCollateralBalance(await usdcContract.balanceOf(account));
+        setShareBalance(await titanContract.balanceOf(account));
+        setDollarBalance(await ironContract.balanceOf(account));
+      }
+    };
+    auxilliaryFn();
+  }, [chainId]);
 
   return !info ? (
     <RedeemContentLoader />

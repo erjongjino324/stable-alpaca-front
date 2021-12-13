@@ -113,7 +113,7 @@ export type Configuration = {
   etherscanUrl: string;
   defaultProvider: string | string[];
   deployments: Deployments;
-  tokens: { [contractName: string]: [string, number] };
+  tokens: { [contractName: string]: string };
   farms?: Farm[];
   foundryPools: FoundryConfig[];
   config?: EthereumConfig;
