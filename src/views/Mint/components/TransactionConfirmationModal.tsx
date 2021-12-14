@@ -53,7 +53,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </ModalCloseButton>
         </ModalHeader>
         <TxModalOutputAmount>
-          <Number value={dollarAmount} decimals={18} precision={6} />
+          <Number value={dollarAmount} decimals={6} precision={6} />
         </TxModalOutputAmount>
         <TxModalTokenName>IRON Tokens</TxModalTokenName>
         <TxModalSlippageHelper>
@@ -74,7 +74,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <TxModalDataRow>
             <TxModalDataRowField>TITAN Deposited</TxModalDataRowField>
             <TxModalDataRowValue>
-              <Number value={shareAmount} decimals={18} precision={6} />
+              <Number value={shareAmount} decimals={6} precision={6} />
             </TxModalDataRowValue>
           </TxModalDataRow>
         )}

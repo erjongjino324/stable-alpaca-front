@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from 'react';
 import styled from 'styled-components';
 import { getDisplayNumber, parseNumber } from '../../utils/formatBN';
 
@@ -13,14 +13,19 @@ interface TokenInputProps {
   maxBalance?: BigNumber;
   onChange?: (value: BigNumber) => void;
   max?: number;
+  value?: BigNumber;
 }
 
 const TokenInput: React.ForwardRefRenderFunction<unknown, TokenInputProps> = (
-  { hasError, disabled, decimals, precision, onChange, max = 1e9, maxBalance },
+  { hasError, disabled, decimals, precision, onChange, max = 1e9, maxBalance, value },
   ref,
 ) => {
   const [input, setInput] = useState<string>('');
   const balance = BigNumber.from(0);
+
+  useEffect(() => {
+    setInput(getDisplayNumber(value, decimals, precision, false, false, false, false))
+  }, [value]);
 
   const patchInputValue = useCallback(
     (newValue: BigNumber) => {

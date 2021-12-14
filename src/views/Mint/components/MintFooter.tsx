@@ -16,9 +16,17 @@ import Label from 'src/components/Label';
 interface MintFooterProps {
   collateralPrice?: BigNumber;
   mintFeeValue?: BigNumber;
+  tokensInfo:
+    Record<string,
+      {
+        price: BigNumber;
+        totalSupply: BigNumber;
+        marketCap: BigNumber;
+      }
+    >;
 }
 
-const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue }) => {
+const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue, tokensInfo }) => {
   const slippage = useGetSlippageTolerance();
   const [poolCollateralBalance] = useState(BigNumber.from(0));
 
@@ -78,7 +86,9 @@ const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue }
         <CardFooterRowRight>
           <div className="value">1</div> <CardUnit>TITAN</CardUnit>
           &nbsp;=&nbsp;
-          <div className="value">60</div>
+          <div className="value">
+            <Number value={tokensInfo?.titan.price} decimals={6} precision={6} />
+          </div>
           <CardUnit>USD</CardUnit>
         </CardFooterRowRight>
       </CardFooterRow>

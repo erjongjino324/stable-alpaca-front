@@ -36,6 +36,9 @@ import { abi as titanAbi } from '../../iron-bank/deployments/mainnet/Titan.json'
 import { abi as poolAbi } from '../../iron-bank/deployments/mainnet/Pool.json';
 import config from 'src/config';
 import { useWeb3React } from '@web3-react/core';
+import { useTokensInfo } from 'src/api/backend-api';
+
+const Tokens = ['iron', 'titan'];
 
 const Mint: React.FC = () => {
   const { library: provider, chainId, account } = useWeb3React();
@@ -44,9 +47,11 @@ const Mint: React.FC = () => {
   const slippage = useGetSlippageTolerance();
   const history = useHistory();
   const info = useIronBankInfo();
-  const [collateralPrice, setCollateralPrice] = useState<BigNumber>();
+  const [collateralPrice, setCollateralPrice] = useState<BigNumber>(BigNumber.from(1e6));
   const [collateralAmount, setCollateralAmount] = useState(BigNumber.from(0));
+  const [sharePrice, setSharePrice] = useState<BigNumber>(BigNumber.from(0));
   const [shareAmount, setShareAmount] = useState(BigNumber.from(0));
+  const [dollarPrice, setDollarPrice] = useState<BigNumber>(BigNumber.from(0));
   const [minOutputAmount, setMinOutputAmount] = useState<BigNumber>();
   const [mintFeeValue, setMintFeeValue] = useState<BigNumber>();
   const [collateralBalance, setCollateralBalance] = useState(BigNumber.from(0));
@@ -54,10 +59,11 @@ const Mint: React.FC = () => {
   const [shareBalance, setShareBalance] = useState(BigNumber.from(0));
   const isZap = useGetIsZap();
   const setIsZap = useSetZap();
-  const usdcContract = new ERC20(tokens.USDC, usdcAbi, provider, '');
-  const ironContract = new ERC20(tokens.IRON, ironAbi, provider, '');
-  const titanContract = new ERC20(tokens.TITAN, titanAbi, provider, '');
-  const poolContract = new ERC20(tokens.POOL, poolAbi, provider, '');
+  const tokensInfo = useTokensInfo(Tokens);
+  const usdcContract = new ERC20(tokens.USDC, usdcAbi, provider?.getSigner(), '');
+  const ironContract = new ERC20(tokens.IRON, ironAbi, provider?.getSigner(), '');
+  const titanContract = new ERC20(tokens.TITAN, titanAbi, provider?.getSigner(), '');
+  const poolContract = new ERC20(tokens.POOL, poolAbi, provider?.getSigner(), '');
 
   const refInputCollateral = useRef(null);
   const refInputShare = useRef(null);
@@ -67,12 +73,24 @@ const Mint: React.FC = () => {
   const isFullCollaterallized = useMemo(() => info?.targetCollateralRatio.gte(10 ** 6), [info]);
 
   const updateCollateralAmount = useCallback((collateralAmount: BigNumber) => {
-    setCollateralAmount(collateralAmount)
-  }, []);
+    try {
+      const shareAmount = BigNumber.from(collateralAmount.mul(collateralPrice).div(sharePrice).toNumber()).div(9)
+      const mindOutputAmount = shareAmount.mul(sharePrice).add(collateralAmount.mul(collateralAmount)).div(dollarPrice)
+      setCollateralAmount(collateralAmount)
+      setShareAmount(shareAmount)
+      setMinOutputAmount(mindOutputAmount)
+    } catch {
+      console.log('BigNumber overflow error')
+    }
+  }, [collateralPrice, sharePrice, dollarPrice]);
 
   const updateShareAmount = useCallback((shareAmount: BigNumber) => {
+    const collateralAmount = BigNumber.from(shareAmount.mul(sharePrice).div(collateralPrice).toNumber()).mul(9)
+    const mindOutputAmount = shareAmount.mul(sharePrice).add(collateralAmount.mul(collateralPrice)).div(dollarPrice)
+    setCollateralAmount(collateralAmount)
     setShareAmount(shareAmount)
-  }, []);
+    setMinOutputAmount(mindOutputAmount)
+  }, [collateralPrice, sharePrice, dollarPrice]);
 
   const onMint = useCallback(() => {
     showModal(TransactionConfirmationModal, {
@@ -80,13 +98,11 @@ const Mint: React.FC = () => {
       collateralAmount,
       collateralPrice,
       shareAmount,
-      sharePrice: info?.sharePrice,
+      sharePrice,
       mintFee: info?.mintingFee,
       slippage,
       onDismiss: hideModal,
-      onConfirmed: () => {
-        hideModal();
-      },
+      onConfirmed: onApproveAndMint,
     });
   }, [
     showModal,
@@ -94,7 +110,7 @@ const Mint: React.FC = () => {
     collateralAmount,
     collateralPrice,
     shareAmount,
-    info?.sharePrice,
+    sharePrice,
     info?.mintingFee,
     slippage,
     hideModal,
@@ -108,6 +124,19 @@ const Mint: React.FC = () => {
     },
     [history],
   );
+
+  const onApproveAndMint = async () => {
+    await usdcContract.approve(tokens.POOL, collateralAmount);
+    await titanContract.approve(tokens.POOL, shareAmount);
+    await poolContract.mint(collateralAmount, shareAmount, minOutputAmount);
+    hideModal();
+  }
+
+  useEffect(() => {
+    setSharePrice(tokensInfo?.titan.price);
+    setDollarPrice(tokensInfo?.iron.price);
+    setCollateralPrice(BigNumber.from(1000000));
+  }, [tokensInfo]);
 
   useEffect(() => {
     const auxilliaryFn = async () => {
@@ -182,7 +211,9 @@ const Mint: React.FC = () => {
                 token={'USDC'}
                 decimals={6}
                 precision={6}
+                max={1e4}
                 onChange={updateCollateralAmount}
+                value={collateralAmount}
               />
               <FormToken>
                 <ButtonSelectCollateral
@@ -223,9 +254,10 @@ const Mint: React.FC = () => {
                 <TokenInput
                   ref={refInputShare}
                   token={'TITAN'}
-                  decimals={18}
+                  decimals={6}
                   precision={6}
                   onChange={updateShareAmount}
+                  value={shareAmount}
                 />
                 <FormToken>
                   <TokenSymbol size={32} symbol={'TITAN'}></TokenSymbol>
@@ -250,7 +282,7 @@ const Mint: React.FC = () => {
             </div>
             <div className="row-input">
               <FormOutput>
-                <Number value={minOutputAmount} decimals={18} precision={6} />
+                <Number value={minOutputAmount} decimals={6} precision={6} />
               </FormOutput>
               <FormToken>
                 <TokenSymbol size={32} symbol="IRON"></TokenSymbol>
@@ -272,7 +304,7 @@ const Mint: React.FC = () => {
           </FormButtonsContainer>
         </CardBody>
       </Card>
-      <MintFooter collateralPrice={collateralPrice} mintFeeValue={mintFeeValue} />
+      <MintFooter collateralPrice={collateralPrice} mintFeeValue={mintFeeValue} tokensInfo={tokensInfo} />
     </>
   );
 };

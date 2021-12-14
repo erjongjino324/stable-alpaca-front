@@ -55,6 +55,10 @@ class ERC20 {
     return this.contract.approve(spender, amount);
   }
 
+  mint(collateralAmount: BigNumber, shareAmount: BigNumber, minOutputAmount: BigNumber): Promise<TransactionResponse> {
+    return this.contract.mint(collateralAmount, shareAmount, minOutputAmount)
+  }
+
   transferFrom(
     sender: string,
     recipient: string,
