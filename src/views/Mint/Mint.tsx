@@ -74,11 +74,19 @@ const Mint: React.FC = () => {
 
   const updateCollateralAmount = useCallback((collateralAmount: BigNumber) => {
     try {
-      const shareAmount = BigNumber.from(collateralAmount.mul(collateralPrice).div(sharePrice).toNumber()).div(9)
-      const mindOutputAmount = shareAmount.mul(sharePrice).add(collateralAmount.mul(collateralAmount)).div(dollarPrice)
-      setCollateralAmount(collateralAmount)
-      setShareAmount(shareAmount)
-      setMinOutputAmount(mindOutputAmount)
+      if (!isZap) {
+        const shareAmount = BigNumber.from(collateralAmount.mul(collateralPrice).div(sharePrice).toNumber()).div(9)
+        const mindOutputAmount = shareAmount.mul(sharePrice).add(collateralAmount.mul(collateralPrice)).div(dollarPrice)
+        setCollateralAmount(collateralAmount)
+        setShareAmount(shareAmount)
+        setMinOutputAmount(mindOutputAmount)
+        console.log('a')
+      } else {
+        const mindOutputAmount = collateralAmount.mul(collateralAmount).div(dollarPrice)
+        setCollateralAmount(collateralAmount)
+        setShareAmount(BigNumber.from(0))
+        setMinOutputAmount(mindOutputAmount)
+      }
     } catch {
       console.log('BigNumber overflow error')
     }
@@ -91,6 +99,12 @@ const Mint: React.FC = () => {
     setShareAmount(shareAmount)
     setMinOutputAmount(mindOutputAmount)
   }, [collateralPrice, sharePrice, dollarPrice]);
+
+  useEffect(() => {
+    if (minOutputAmount) {
+      setMintFeeValue(minOutputAmount.mul(info?.mintingFee).div(BigNumber.from(1e6)))
+    }
+  }, [minOutputAmount]);
 
   const onMint = useCallback(() => {
     showModal(TransactionConfirmationModal, {
@@ -131,6 +145,12 @@ const Mint: React.FC = () => {
     await poolContract.mint(collateralAmount, shareAmount, minOutputAmount);
     hideModal();
   }
+
+  useEffect(() => {
+    setCollateralAmount(BigNumber.from(0))
+    setShareAmount(BigNumber.from(0))
+    setMinOutputAmount(BigNumber.from(0))
+  }, [isZap]);
 
   useEffect(() => {
     setSharePrice(tokensInfo?.titan.price);

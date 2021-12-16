@@ -35,13 +35,12 @@ const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue, 
       <CardFooterRow>
         <CardFooterRowLeft>Minting fee</CardFooterRowLeft>
         <CardFooterRowRight>
-          0.4 %
           {!!mintFeeValue && (
             <>
               <Spacer size="xs" />
               =
               <Spacer size="xs" />
-              <Amount value={mintFeeValue} decimals={18} keepZeros={false} precision={6} />
+              <Amount value={mintFeeValue} decimals={6} keepZeros={false} precision={6} noUnits={true} />
               <Spacer size="xs" />
               <CardUnit>IRON</CardUnit>
             </>

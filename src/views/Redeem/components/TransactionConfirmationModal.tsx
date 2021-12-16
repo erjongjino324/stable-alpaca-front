@@ -66,7 +66,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           {!minOutputShareAmount.eq(0) && (
             <StyledReceiveToken>
               <TxModalOutputAmount>
-                <Number value={minOutputShareAmount} decimals={18} precision={6} />
+                <Number value={minOutputShareAmount} decimals={6} precision={6} />
               </TxModalOutputAmount>
               <TxModalTokenName>TITAN Tokens</TxModalTokenName>
             </StyledReceiveToken>
@@ -81,7 +81,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <TxModalDataRow>
           <TxModalDataRowField>IRON Deposited</TxModalDataRowField>
           <TxModalDataRowValue>
-            <Number value={dollarAmount} decimals={18} precision={6} />
+            <Number value={dollarAmount} decimals={6} precision={6} />
           </TxModalDataRowValue>
         </TxModalDataRow>
 

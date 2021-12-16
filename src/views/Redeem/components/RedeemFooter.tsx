@@ -18,11 +18,20 @@ interface RedeemFooterProps {
   collateralPrice: BigNumber;
   collateralBalance: BigNumber;
   redeemFeeValue?: BigNumber;
+  tokensInfo:
+    Record<string,
+      {
+        price: BigNumber;
+        totalSupply: BigNumber;
+        marketCap: BigNumber;
+      }
+      >;
 }
 const RedeemFooter: React.FC<RedeemFooterProps> = ({
   collateralPrice,
   collateralBalance,
   redeemFeeValue,
+  tokensInfo
 }) => {
   const slippage = useGetSlippageTolerance();
   const info = useIronBankInfo();
@@ -34,15 +43,14 @@ const RedeemFooter: React.FC<RedeemFooterProps> = ({
       <CardFooterRow>
         <CardFooterRowLeft>Redemption fee</CardFooterRowLeft>
         <CardFooterRowRight>
-          0.4 %
-          {!!redeemFeeValue && redeemFeeValue.gt(0) && (
+          {!!redeemFeeValue && (
             <>
               <Spacer size="xs" />
               =
               <Spacer size="xs" />
               <Amount
                 value={redeemFeeValue}
-                decimals={18}
+                decimals={6}
                 keepZeros={false}
                 precision={4}
                 noUnits={true}
@@ -89,14 +97,14 @@ const RedeemFooter: React.FC<RedeemFooterProps> = ({
               </CardFooterRowRight>
             </CardFooterRow>
           )}
-        {!isFullCollateralized && !!info?.sharePrice && (
+        {!isFullCollateralized && !!tokensInfo?.titan.price && (
           <CardFooterRow>
             <CardFooterRowLeft></CardFooterRowLeft>
             <CardFooterRowRight>
               <div className="value">1</div> <CardUnit>TITAN</CardUnit>
               &nbsp;=&nbsp;
               <div className="value">
-                <Number value={info?.sharePrice} decimals={6} precision={6} />
+                <Number value={tokensInfo?.titan.price} decimals={6} precision={6} />
               </div>
               <CardUnit>USD</CardUnit>
             </CardFooterRowRight>
