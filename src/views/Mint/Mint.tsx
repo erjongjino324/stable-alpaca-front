@@ -31,9 +31,9 @@ import MintFooter from './components/MintFooter';
 import TransactionConfirmationModal from './components/TransactionConfirmationModal';
 import ERC20 from '../../iron-bank/ERC20';
 import { abi as usdcAbi } from '../../iron-bank/deployments/mainnet/USDC.json';
-import { abi as ironAbi } from '../../iron-bank/deployments/mainnet/Iron.json';
-import { abi as titanAbi } from '../../iron-bank/deployments/mainnet/Titan.json';
-import { abi as poolAbi } from '../../iron-bank/deployments/mainnet/Pool.json';
+import { abi as dollarAbi } from '../../iron-bank/deployments/mainnet/Dollar.json';
+import { abi as shareAbi } from '../../iron-bank/deployments/mainnet/Share.json';
+import { abi as poolAbi } from '../../iron-bank/deployments/mainnet/PoolUSDC.json';
 import config from 'src/config';
 import { useWeb3React } from '@web3-react/core';
 import { useTokensInfo } from 'src/api/backend-api';
@@ -61,9 +61,9 @@ const Mint: React.FC = () => {
   const setIsZap = useSetZap();
   const tokensInfo = useTokensInfo(Tokens);
   const usdcContract = new ERC20(tokens.USDC, usdcAbi, provider?.getSigner(), '');
-  const ironContract = new ERC20(tokens.IRON, ironAbi, provider?.getSigner(), '');
-  const titanContract = new ERC20(tokens.TITAN, titanAbi, provider?.getSigner(), '');
-  const poolContract = new ERC20(tokens.POOL, poolAbi, provider?.getSigner(), '');
+  const dollarContract = new ERC20(tokens.DOLLAR, dollarAbi, provider?.getSigner(), '');
+  const shareContract = new ERC20(tokens.SHARE, shareAbi, provider?.getSigner(), '');
+  const poolContract = new ERC20(tokens.POOLUSDC, poolAbi, provider?.getSigner(), '');
 
   const refInputCollateral = useRef(null);
   const refInputShare = useRef(null);
@@ -140,8 +140,8 @@ const Mint: React.FC = () => {
   );
 
   const onApproveAndMint = async () => {
-    await usdcContract.approve(tokens.POOL, collateralAmount);
-    await titanContract.approve(tokens.POOL, shareAmount);
+    await usdcContract.approve(tokens.POOLUSDC, collateralAmount);
+    await shareContract.approve(tokens.POOLUSDC, shareAmount);
     await poolContract.mint(collateralAmount, shareAmount, minOutputAmount);
     hideModal();
   }
@@ -162,8 +162,8 @@ const Mint: React.FC = () => {
     const auxilliaryFn = async () => {
       if (chainId) {
         setCollateralBalance(await usdcContract.balanceOf(account));
-        setShareBalance(await titanContract.balanceOf(account));
-        setDollarBalance(await ironContract.balanceOf(account));
+        setShareBalance(await shareContract.balanceOf(account));
+        setDollarBalance(await dollarContract.balanceOf(account));
       }
     };
     auxilliaryFn();
@@ -254,7 +254,7 @@ const Mint: React.FC = () => {
             <FormRow>
               <div className="row-header">
                 <h6>
-                  TITAN &middot;{' '}
+                  REV &middot;{' '}
                   <Number
                     percentage={true}
                     value={BigNumber.from(1e6).sub(info.targetCollateralRatio)}
@@ -273,7 +273,7 @@ const Mint: React.FC = () => {
               <div className="row-input">
                 <TokenInput
                   ref={refInputShare}
-                  token={'TITAN'}
+                  token={'REV'}
                   decimals={6}
                   precision={6}
                   onChange={updateShareAmount}
@@ -281,7 +281,7 @@ const Mint: React.FC = () => {
                 />
                 <FormToken>
                   <TokenSymbol size={32} symbol={'TITAN'}></TokenSymbol>
-                  <span>{'TITAN'}</span>
+                  <span>REV</span>
                 </FormToken>
               </div>
             </FormRow>
@@ -306,7 +306,7 @@ const Mint: React.FC = () => {
               </FormOutput>
               <FormToken>
                 <TokenSymbol size={32} symbol="IRON"></TokenSymbol>
-                <span>IRON</span>
+                <span>REVUSD</span>
               </FormToken>
             </div>
           </FormRow>

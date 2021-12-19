@@ -55,7 +55,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <TxModalOutputAmount>
           <Number value={dollarAmount} decimals={6} precision={6} />
         </TxModalOutputAmount>
-        <TxModalTokenName>IRON Tokens</TxModalTokenName>
+        <TxModalTokenName>REVUSD Tokens</TxModalTokenName>
         <TxModalSlippageHelper>
           Output is estimated at {slippage * 100}% slippage tolerance. The transaction will be
           reveted if the actual received amount is lower.
@@ -72,7 +72,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         )}
         {!!shareAmount && shareAmount.gt(0) && (
           <TxModalDataRow>
-            <TxModalDataRowField>TITAN Deposited</TxModalDataRowField>
+            <TxModalDataRowField>REV Deposited</TxModalDataRowField>
             <TxModalDataRowValue>
               <Number value={shareAmount} decimals={6} precision={6} />
             </TxModalDataRowValue>
@@ -90,7 +90,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <TxModalDataRow>
             <TxModalDataRowField></TxModalDataRowField>
             <TxModalDataRowValue>
-              1 TITAN = $
+              1 REV = $
               <Number value={sharePrice} decimals={6} precision={6} />
             </TxModalDataRowValue>
           </TxModalDataRow>

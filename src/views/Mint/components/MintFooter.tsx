@@ -42,7 +42,7 @@ const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue, 
               <Spacer size="xs" />
               <Amount value={mintFeeValue} decimals={6} keepZeros={false} precision={6} noUnits={true} />
               <Spacer size="xs" />
-              <CardUnit>IRON</CardUnit>
+              <CardUnit>REVUSD</CardUnit>
             </>
           )}
         </CardFooterRowRight>
@@ -83,7 +83,7 @@ const MintFooter: React.FC<MintFooterProps> = ({ collateralPrice, mintFeeValue, 
       <CardFooterRow>
         <CardFooterRowLeft></CardFooterRowLeft>
         <CardFooterRowRight>
-          <div className="value">1</div> <CardUnit>TITAN</CardUnit>
+          <div className="value">1</div> <CardUnit>REV</CardUnit>
           &nbsp;=&nbsp;
           <div className="value">
             <Number value={tokensInfo?.titan.price} decimals={6} precision={6} />

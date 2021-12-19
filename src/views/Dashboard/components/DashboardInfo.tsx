@@ -32,7 +32,7 @@ const DashboardInfo: React.FC = () => {
             </TokenDisplayDataBoxValue>
           </StyledValueLockValue>
           <StyledValueLockChart>
-            <TotalValueLockChart />
+            {/*<TotalValueLockChart />*/}
           </StyledValueLockChart>
           <StyledValueLockFooter>
             <StyledValueLockItem>
