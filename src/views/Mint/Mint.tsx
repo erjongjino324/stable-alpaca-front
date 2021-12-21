@@ -80,9 +80,8 @@ const Mint: React.FC = () => {
         setCollateralAmount(collateralAmount)
         setShareAmount(shareAmount)
         setMinOutputAmount(mindOutputAmount)
-        console.log('a')
       } else {
-        const mindOutputAmount = collateralAmount.mul(collateralAmount).div(dollarPrice)
+        const mindOutputAmount = collateralAmount.mul(collateralPrice).div(dollarPrice)
         setCollateralAmount(collateralAmount)
         setShareAmount(BigNumber.from(0))
         setMinOutputAmount(mindOutputAmount)
