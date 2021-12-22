@@ -9,8 +9,8 @@ const config: Configuration = {
   deployments: deploymentMainnet,
   tokens: {
     USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-    SHARE: '0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A',
-    DOLLAR: '0xD86b5923F3AD7b585eD81B448170ae026c65ae9a',
+    SHARE: '0x49413090e04cE1ecCC7F38a9660FF58b84E58e86',
+    DOLLAR: '0xb2b1B72acCBc25DD8F69d99C0D1365aDb1A6c716',
     POOLUSDC: '0x88296f7fa23976054FAf04974fce074E35775b3b',
   },
   foundryPools: [],
